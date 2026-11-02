@@ -1,10 +1,13 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import router from './routes.js';
+import router from './routes/index.js';
+import ErrorHandler from './middlewares/error.js';
+
 
 const app = express();
-const port = process.env.PORT || 5000;
-const host = process.env.NODE_ENV !== 'production' ? 'localhost' : '0.0.0.0';
+const port = process.env.PORT;
+const host = process.env.HOST;
 
 app.use(cors());
 app.use((req, res, next) => {
@@ -27,15 +30,8 @@ app.use((req, res) => {
   });
 });
 
-// eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({
-    status: 'error',
-    message: 'Terjadi kegagalan pada server kami',
-  });
-});
+app.use(ErrorHandler);
 
-app.listen(port, host, () => {
+app.listen(port, () => {
   console.log(`Server berjalan pada http://${host}:${port}`);
 });

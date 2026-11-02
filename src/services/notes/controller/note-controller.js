@@ -1,7 +1,9 @@
 import { nanoid } from 'nanoid';
-import notes from './notes.js';
+import notes from '../notes.js';
+import response from '../../../utils/response.js';
+import { InvariantError } from '../../../exceptions/index.js';
 
-export const createNote = (req, res) => {
+export const createNote = (req, res, next) => {
   const { title = 'untitled', tags, body } = req.body;
   const id = nanoid(16);
   const createdAt = new Date().toISOString();
@@ -20,23 +22,14 @@ export const createNote = (req, res) => {
 
   const isSuccess = notes.filter((note) => note.id === id).length > 0;
 
-  if (isSuccess) {
-    return res.status(201).json({
-      status: 'success',
-      message: 'Catatan berhasil ditambahkan',
-      data: {
-        noteId: id,
-      },
-    });
+  if (!isSuccess) {
+    return next(new InvariantError('Catatan gagal ditambahkan'));
   }
 
-  return res.status(500).json({
-    status: 'fail',
-    message: 'Catatan gagal ditambahkan',
-  });
+  return response(res, 201, 'Catatan berhasil ditambahkan', { noteId: id });
 };
 
-export const getNotes = (req, res) => {
+export const getAllNotes = (req, res) => {
   return res.json({
     status: 'success',
     data: {
@@ -44,6 +37,8 @@ export const getNotes = (req, res) => {
     },
   });
 };
+
+export const getNotes = getAllNotes;
 
 export const getNoteById = (req, res) => {
   const { id } = req.params;
