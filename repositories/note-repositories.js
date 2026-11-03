@@ -1,5 +1,7 @@
-import { Pool } from 'pg';
+import pkg from 'pg';
 import { nanoid } from 'nanoid';
+
+const { Pool } = pkg;
 
 class NoteRepositories {
   constructor() {
